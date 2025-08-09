@@ -1,6 +1,5 @@
 ﻿from django.urls import path
 
-
 from django.urls import path, include
 from rest_framework import routers
 
@@ -23,4 +22,4 @@ router.register("reservations", ReservationViewSet)
 
 urlpatterns = [path("", include(router.urls))]
 
-app_name = "cinema"
+app_name = "theater"
