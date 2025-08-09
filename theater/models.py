@@ -6,8 +6,12 @@ class Actor(models.Model):
     first_name = models.CharField(max_length=255)
     last_name = models.CharField(max_length=255)
 
-    def __str__(self) -> str:
+    @property
+    def full_name(self) -> str:
         return f"{self.first_name} {self.last_name}"
+    
+    def __str__(self) -> str:
+        return self.full_name
 
 
 class Genre(models.Model):
@@ -27,10 +31,14 @@ class Play(models.Model):
         return str(self.title)
 
 
-class TheatreHall(models.Model):
+class TheaterHall(models.Model):
     name = models.CharField(max_length=255)
     rows = models.IntegerField()
     seats_in_row = models.IntegerField()
+
+    @property
+    def capacity(self) -> int:
+        return self.rows * self.seats_in_row
 
     def __str__(self) -> str:
         return (
@@ -47,7 +55,7 @@ class Reservation(models.Model):
 
 class Performance(models.Model):
     play = models.ForeignKey(Play, on_delete=models.CASCADE)
-    theatre_hall = models.ForeignKey(TheatreHall, on_delete=models.CASCADE)
+    theater_hall = models.ForeignKey(TheaterHall, on_delete=models.CASCADE)
     showtime = models.DateTimeField()
 
     def __str__(self) -> str:
@@ -61,4 +69,4 @@ class Ticket(models.Model):
     reservation = models.ForeignKey(Reservation, on_delete=models.DO_NOTHING)
 
     def __str__(self):
-        return f"{self.performance}, row({self.row}), seat({self.seat})"     
+        return f"Row({self.row}), seat({self.seat})"
