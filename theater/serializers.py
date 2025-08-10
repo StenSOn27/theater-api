@@ -113,6 +113,32 @@ class ReservationSerializer(serializers.ModelSerializer):
 
 
 class TicketSerializer(serializers.ModelSerializer):
+    performance = serializers.PrimaryKeyRelatedField(queryset=Performance.objects.all(), write_only=True)  # Додаємо performance для валідації
+
+    def validate(self, attrs):
+        data = super().validate(attrs=attrs)
+        Ticket.validate_ticket(
+            attrs["row"],
+            attrs["seat"],
+            attrs["performance"].theater_hall,
+            ValidationError
+        )
+        return data
+
     class Meta:
         model = Ticket
-        fields = ("id", "row", "seat", "performance", "reservation")
+        fields = ("id", "row", "seat", "performance")
+
+
+class TicketListSerializer(TicketSerializer):
+    performance_title = serializers.CharField(source='performance.play.title', read_only=True)
+
+    class Meta:
+        model = Ticket
+        fields = ("id", "row", "seat", "performance_title")
+
+
+class TicketSeatsSerializer(TicketSerializer):
+    class Meta:
+        model = Ticket
+        fields = ("row", "seat")
