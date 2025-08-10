@@ -1,5 +1,7 @@
-﻿from dataclasses import field
+﻿from django.db import transaction
 from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
+
 from theater.models import (
     Genre,
     Actor,
@@ -54,7 +56,7 @@ class PlayListSerializer(PlaySerializer):
         fields = ("id", "title", "genres", "actors", "image")
 
 
-class MovieDetailSerializer(PlaySerializer):
+class PlayDetailSerializer(PlaySerializer):
     genres = GenreSerializer(many=True, read_only=True)
     actors = ActorSerializer(many=True, read_only=True)
 
@@ -63,11 +65,16 @@ class MovieDetailSerializer(PlaySerializer):
         fields = (
             "id",
             "title",
-            "duration",
             "description",
             "genres",
             "actors",
         )
+
+
+class PlayImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Play
+        fields = ("id", "image")
 
 
 class PerformanceSerializer(serializers.ModelSerializer):
