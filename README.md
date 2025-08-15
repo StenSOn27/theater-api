@@ -1,4 +1,4 @@
-﻿# 🎭 Theatre API
+﻿# 🎭 Theater API
 
 Django REST API for managing a theatre system: movies, showtimes, bookings, and users.
 
