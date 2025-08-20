@@ -3,7 +3,7 @@ from datetime import datetime
 from django.db.models import F, Count
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import extend_schema, OpenApiParameter
-from rest_framework import viewsets, status
+from rest_framework import viewsets, status, mixins
 from rest_framework.decorators import action
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAdminUser
@@ -83,10 +83,10 @@ class PlayViewSet(viewsets.ModelViewSet):
         return queryset.distinct()
 
     def get_serializer_class(self):
-        if self.action == "list":
+        if self.action in ["list", "create"]:
             return PlayListSerializer
 
-        if self.action == "retrieve":
+        if self.action in ["retrieve", "update", "partial_update"]:
             return PlayDetailSerializer
 
         if self.action == "upload_image":
@@ -198,7 +198,12 @@ class OrderPagination(PageNumberPagination):
     max_page_size = 100
 
 
-class ReservationViewSet(viewsets.ModelViewSet):
+class ReservationViewSet(mixins.CreateModelMixin,
+                         mixins.ListModelMixin,
+                         mixins.RetrieveModelMixin,
+                         mixins.DestroyModelMixin,
+                         viewsets.GenericViewSet
+):
     queryset = Reservation.objects.prefetch_related(
         "tickets__reservation__play", "tickets__performance__theater_hall"
     )
