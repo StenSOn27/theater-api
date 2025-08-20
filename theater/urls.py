@@ -1,6 +1,4 @@
-﻿from django.urls import path
-
-from django.urls import path, include
+﻿from django.urls import path, include
 from rest_framework import routers
 
 from theater.views import (
@@ -13,12 +11,12 @@ from theater.views import (
 )
 
 router = routers.DefaultRouter()
-router.register("genres", GenreViewSet)
-router.register("actors", ActorViewSet)
-router.register("theater_halls", TheaterHallViewSet)
-router.register("plays", PlayViewSet)
-router.register("performances", PerformanceViewSet)
-router.register("reservations", ReservationViewSet)
+router.register("genres", GenreViewSet, basename="genre")
+router.register("actors", ActorViewSet, basename="actor")
+router.register("theater_halls", TheaterHallViewSet, basename="theaterhall")
+router.register("plays", PlayViewSet, basename="play")
+router.register("performances", PerformanceViewSet, basename="performance")
+router.register("reservations", ReservationViewSet, basename="reservation")
 
 urlpatterns = [path("", include(router.urls))]
 
