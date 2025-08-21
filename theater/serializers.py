@@ -32,6 +32,13 @@ class TheaterHallSerializer(serializers.ModelSerializer):
 
 
 class PlaySerializer(serializers.ModelSerializer):
+    genres = serializers.PrimaryKeyRelatedField(
+        queryset=Genre.objects.all(), many=True
+    )
+    actors = serializers.PrimaryKeyRelatedField(
+        queryset=Actor.objects.all(), many=True
+    )
+
     class Meta:
         model = Play
         fields = (
@@ -44,13 +51,6 @@ class PlaySerializer(serializers.ModelSerializer):
 
 
 class PlayListSerializer(PlaySerializer):
-    genres = serializers.SlugRelatedField(
-        many=True, read_only=True, slug_field="name"
-    )
-    actors = serializers.SlugRelatedField(
-        many=True, read_only=True, slug_field="full_name"
-    )
-
     class Meta:
         model = Play
         fields = ("id", "title", "genres", "actors", "image")
@@ -92,7 +92,6 @@ class PerformanceListSerializer(PerformanceSerializer):
     theater_hall_capacity = serializers.IntegerField(
         source="theater_hall.capacity", read_only=True
     )
-    tickets_available = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = Performance
@@ -103,12 +102,11 @@ class PerformanceListSerializer(PerformanceSerializer):
             "play_image",
             "theater_hall_name",
             "theater_hall_capacity",
-            "tickets_available",
         )
 
 
 class TicketSerializer(serializers.ModelSerializer):
-    performance = serializers.PrimaryKeyRelatedField(queryset=Performance.objects.all(), write_only=True)  # Додаємо performance для валідації
+    performance = serializers.PrimaryKeyRelatedField(queryset=Performance.objects.all())
 
     def validate(self, attrs):
         data = super().validate(attrs=attrs)
@@ -153,7 +151,7 @@ class PerformanceDetailSerializer(PerformanceSerializer):
 
 
 class ReservationSerializer(serializers.ModelSerializer):
-    tickets = TicketSerializer(many=True, read_only=False, allow_empty=False)
+    tickets = TicketSerializer(many=True, allow_empty=False)
 
     class Meta:
         model = Reservation
